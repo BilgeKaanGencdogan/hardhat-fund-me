@@ -36,8 +36,11 @@ contract FundMe {
     // because instead of storing variables inside storage slots
     // we actually store them directly into the byte code of the contract.
 
-    constructor() {
+    AggregatorV3Interface public priceFeed;
+
+    constructor(address priceFeedAddress) {
         i_owner = msg.sender;
+        priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
     function fund() public payable {
@@ -69,7 +72,7 @@ contract FundMe {
         //msg.value.getConversionRate(); equals getConversionRate(msg.value);
 
         require(
-            msg.value.getConversionRate() >= MINIMUM_USD,
+            msg.value.getConversionRate(priceFeed) >= MINIMUM_USD,
             "Did not send enough!"
         );
 
